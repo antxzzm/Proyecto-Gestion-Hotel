@@ -1,0 +1,14 @@
+CREATE DATABASE loginjava;
+GO
+
+USE loginjava;
+GO
+
+-- Tabla: Usuarios
+CREATE TABLE usuarios (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    contrasena VARCHAR(100) NOT NULL
+);
+
+
