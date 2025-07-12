@@ -175,10 +175,10 @@ public class Login extends javax.swing.JFrame {
         if (loginExitoso) {
             JOptionPane.showMessageDialog(this, "✅ Bienvenido, " + usuario);
             
-            SistemaCliente sistemaCliente = new SistemaCliente(this);
-            sistemaCliente.setVisible(true);
+            Sistema sistema = new Sistema(this);
+            sistema.setVisible(true);
             this.setVisible(true);
-            sistemaCliente.setLocationRelativeTo(null);
+            sistema.setLocationRelativeTo(null);
             this.dispose(); // cierra la ventana de login actual
         } else {
             JOptionPane.showMessageDialog(this, "❌ Usuario o contraseña incorrectos.");

@@ -217,8 +217,9 @@ public class Registro extends javax.swing.JFrame {
 
         if (registrado) {
             JOptionPane.showMessageDialog(this, "✅ Usuario registrado con éxito.");
-            new Login().setVisible(true);
-            new Login().setLocationRelativeTo(null);
+            Login login = new Login();
+            login.setVisible(true);
+            login.setLocationRelativeTo(null);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "⚠️ El usuario ya existe o ocurrió un error.");
