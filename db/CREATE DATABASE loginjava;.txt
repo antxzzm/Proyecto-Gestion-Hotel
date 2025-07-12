@@ -5,7 +5,7 @@ USE loginjava;
 GO
 
 -- Tabla: Usuarios
-CREATE TABLE usuarios (
+CREATE TABLE Usuarios (
     id INT IDENTITY(1,1) PRIMARY KEY,
     usuario VARCHAR(50) NOT NULL UNIQUE,
     contrasena VARCHAR(100) NOT NULL
@@ -22,10 +22,11 @@ CREATE TABLE Clientes (
 -- Tabla: Habitaciones
 CREATE TABLE Habitaciones (
     numero_habitacion VARCHAR(10) PRIMARY KEY,
-    estado BIT NOT NULL,
+    estado BIT NOT NULL, -- 1 = disponible, 0 = reservada
     precio_por_dia DECIMAL(10, 2) NOT NULL
 );
 
+-- Insertar habitaciones iniciales
 INSERT INTO Habitaciones (numero_habitacion, estado, precio_por_dia) VALUES
 ('101', 1, 120.00),
 ('102', 1, 120.00),
@@ -41,9 +42,20 @@ INSERT INTO Habitaciones (numero_habitacion, estado, precio_por_dia) VALUES
 -- Tabla: Reservas
 CREATE TABLE Reservas (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    dni_cliente VARCHAR(20) NOT NULL,
+    dni_cliente VARCHAR(15) NOT NULL,
     numero_habitacion VARCHAR(10) NOT NULL,
     fecha_entrada DATE NOT NULL,
     fecha_salida DATE NOT NULL,
-    estado VARCHAR(20) NOT NULL
+    estado VARCHAR(20) NOT NULL,
+    CONSTRAINT fk_reserva_cliente FOREIGN KEY (dni_cliente) REFERENCES Clientes(dni),
+    CONSTRAINT fk_reserva_habitacion FOREIGN KEY (numero_habitacion) REFERENCES Habitaciones(numero_habitacion)
+);
+
+-- Tabla: Facturas
+CREATE TABLE Facturas (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    id_reserva INT NOT NULL UNIQUE, -- Única factura por reserva
+    fecha_emision DATE NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_factura_reserva FOREIGN KEY (id_reserva) REFERENCES Reservas(id)
 );
