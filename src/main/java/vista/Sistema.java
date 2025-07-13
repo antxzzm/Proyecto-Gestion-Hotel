@@ -1,6 +1,6 @@
 package vista;
 
-// LIBRER√çAS EST√ÅNDAR
+// LIBRER√?AS EST√?NDAR
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Date;
@@ -79,7 +79,7 @@ public class Sistema extends javax.swing.JFrame {
         desactivarCamposFactura();
         cargarEstadosHabitaciones();      // Carga estados de habitaciones
         configurarEventosVentana();       // Volver a login al cerrar
-        configurarCambioDePesta√±as();     // Controlar tab activo
+        configurarCambioDePestanias();     // Controlar tab activo
         cargarClientesEnTabla();          // Mostrar clientes registrados
         desactivarComponentesIniciales(); // Desactivar botones/calendarios
         cargarReservasEnTabla();          // Mostrar reservas en tabla
@@ -122,7 +122,7 @@ public class Sistema extends javax.swing.JFrame {
     // ------------------------------------------------------------------------
     // CONFIGURACI√ìN DE COMPONENTES
     // ------------------------------------------------------------------------
-    private void configurarCambioDePesta√±as() {
+    private void configurarCambioDePestanias() {
         jTabbedPane1.addChangeListener(e -> {
             if (!permitirCambio) {
                 jTabbedPane1.setSelectedIndex(indiceActual);
@@ -392,7 +392,7 @@ public class Sistema extends javax.swing.JFrame {
                     .addComponent(btnReservas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addGap(0, 8, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(btnFacturacion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -457,6 +457,11 @@ public class Sistema extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblClientesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblClientes);
 
         jLabel16.setForeground(new java.awt.Color(255, 0, 0));
@@ -466,7 +471,6 @@ public class Sistema extends javax.swing.JFrame {
 
         btnEliminar.setBackground(new java.awt.Color(255, 255, 255));
         btnEliminar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnEliminar.setForeground(new java.awt.Color(0, 0, 0));
         btnEliminar.setText("ELIMINAR");
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -476,7 +480,6 @@ public class Sistema extends javax.swing.JFrame {
 
         btnRegistrar.setBackground(new java.awt.Color(255, 255, 255));
         btnRegistrar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnRegistrar.setForeground(new java.awt.Color(0, 0, 0));
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -562,7 +565,7 @@ public class Sistema extends javax.swing.JFrame {
                     .addComponent(txtSexo, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 28, Short.MAX_VALUE)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -697,7 +700,6 @@ public class Sistema extends javax.swing.JFrame {
 
         btnReservar.setBackground(new java.awt.Color(255, 255, 255));
         btnReservar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnReservar.setForeground(new java.awt.Color(0, 0, 0));
         btnReservar.setText("RESERVAR");
         btnReservar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -722,7 +724,6 @@ public class Sistema extends javax.swing.JFrame {
 
         btnVerificarCliente.setBackground(new java.awt.Color(255, 255, 255));
         btnVerificarCliente.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnVerificarCliente.setForeground(new java.awt.Color(0, 0, 0));
         btnVerificarCliente.setText("VERIFICAR");
         btnVerificarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1154,7 +1155,7 @@ public class Sistema extends javax.swing.JFrame {
         if (cliente != null && nombreCompletoBD.equals(nombreCompletoIngresado)) {
 
             if (reservaService.tieneReservaActiva(dni)) {
-                JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Este cliente ya tiene una reserva activa.");
+                JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Este cliente ya tiene una reserva activa.");
                 return;
             }
 
@@ -1178,7 +1179,7 @@ public class Sistema extends javax.swing.JFrame {
             UtilHabitacion.configurarBotonesDisponibles(panelHabitaciones);
 
         } else {
-            JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Cliente no encontrado. Verifique el DNI y nombre.");
+            JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Cliente no encontrado. Verifique el DNI y nombre.");
         }
     }//GEN-LAST:event_btnVerificarClienteActionPerformed
 
@@ -1232,7 +1233,7 @@ public class Sistema extends javax.swing.JFrame {
         // Buscar habitaci√≥n
         Habitacion habitacion = habitacionService.buscarPorNumero(numeroSeleccionado);
         if (habitacion == null) {
-            JOptionPane.showMessageDialog(this, "‚ùå Habitaci√≥n no encontrada: " + numeroSeleccionado);
+            JOptionPane.showMessageDialog(this, "‚?å Habitaci√≥n no encontrada: " + numeroSeleccionado);
             return;
         }
 
@@ -1281,7 +1282,7 @@ public class Sistema extends javax.swing.JFrame {
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "‚ùå Error al registrar reserva.");
+            JOptionPane.showMessageDialog(this, "‚?å Error al registrar reserva.");
         }
         cargarReservasEnTabla();
     }//GEN-LAST:event_btnReservarActionPerformed
@@ -1302,9 +1303,9 @@ public class Sistema extends javax.swing.JFrame {
             return;
         }
 
-        //Ô∏è Validar si el cliente ya existe
+        //Ô∏? Validar si el cliente ya existe
         if (clienteService.buscarPorDNI(dni) != null) {
-            JOptionPane.showMessageDialog(this, "‚ö†Ô∏è El cliente con ese DNI ya est√° registrado.");
+            JOptionPane.showMessageDialog(this, "‚ö†Ô∏? El cliente con ese DNI ya est√° registrado.");
             return;
         }
 
@@ -1327,7 +1328,7 @@ public class Sistema extends javax.swing.JFrame {
             limpiarCampos();
 
         } else {
-            JOptionPane.showMessageDialog(this, "‚ùå El cliente ya existe o hubo un error.");
+            JOptionPane.showMessageDialog(this, "‚?å El cliente ya existe o hubo un error.");
         }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -1347,7 +1348,7 @@ public class Sistema extends javax.swing.JFrame {
         // Verificar si el cliente tiene reservas activas
         if (reservaService.tieneReservaActiva(dni)) {
             JOptionPane.showMessageDialog(this,
-                    "‚ùå No se puede eliminar. El cliente tiene una reserva activa.");
+                    "‚?å No se puede eliminar. El cliente tiene una reserva activa.");
             return;
         }
 
@@ -1414,7 +1415,7 @@ public class Sistema extends javax.swing.JFrame {
         String estado = modelo.getValueAt(fila, 7).toString();
 
         if (!estado.equalsIgnoreCase("Activa")) {
-            JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Solo se pueden cancelar reservas activas.");
+            JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Solo se pueden cancelar reservas activas.");
             return;
         }
 
@@ -1431,7 +1432,7 @@ public class Sistema extends javax.swing.JFrame {
             cargarReservasEnTabla();
             cargarEstadosHabitaciones();
         } else {
-            JOptionPane.showMessageDialog(this, "‚ùå Error al cancelar la reserva.");
+            JOptionPane.showMessageDialog(this, "‚?å Error al cancelar la reserva.");
         }
     }//GEN-LAST:event_btnCancelarReservaActionPerformed
 
@@ -1443,7 +1444,7 @@ public class Sistema extends javax.swing.JFrame {
         String dni = txtFacturaCliente.getText().trim();
 
         if (dni.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Ingresa un DNI para buscar.");
+            JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Ingresa un DNI para buscar.");
             return;
         }
 
@@ -1451,7 +1452,7 @@ public class Sistema extends javax.swing.JFrame {
         List<Reserva> reservas = reservaService.obtenerReservasFinalizadasPorDni(dni);
 
         if (reservas.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "‚ùå No hay reservas finalizadas para este DNI.");
+            JOptionPane.showMessageDialog(this, "‚?å No hay reservas finalizadas para este DNI.");
             return;
         }
 
@@ -1487,7 +1488,7 @@ public class Sistema extends javax.swing.JFrame {
 
     private void btnGenerarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarFacturaActionPerformed
         if (idReservaFactura == -1) {
-            JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Primero debes buscar una reserva finalizada.");
+            JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Primero debes buscar una reserva finalizada.");
             return;
         }
 
@@ -1495,7 +1496,7 @@ public class Sistema extends javax.swing.JFrame {
             // Verificar si la reserva ya fue facturada
             Reserva reservaExistente = reservaService.buscarPorId(idReservaFactura);
             if (reservaExistente != null && "Facturada".equalsIgnoreCase(reservaExistente.getEstado())) {
-                JOptionPane.showMessageDialog(this, "‚ö†Ô∏è Esta reserva ya ha sido facturada.");
+                JOptionPane.showMessageDialog(this, "‚ö†Ô∏? Esta reserva ya ha sido facturada.");
                 return;
             }
 
@@ -1525,18 +1526,28 @@ public class Sistema extends javax.swing.JFrame {
                 desactivarCamposFactura();
                 idReservaFactura = -1;
             } else {
-                JOptionPane.showMessageDialog(this, "‚ùå Error al guardar la factura.");
+                JOptionPane.showMessageDialog(this, "‚?å Error al guardar la factura.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "‚ùå Ocurri√≥ un error al generar la factura.");
+            JOptionPane.showMessageDialog(this, "‚?å Ocurri√≥ un error al generar la factura.");
         }
     }//GEN-LAST:event_btnGenerarFacturaActionPerformed
 
     private void txtClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClientesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtClientesActionPerformed
+
+    private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
+        int fila = tblClientes.getSelectedRow();
+        if (fila >= 0) {
+        txtDni.setText(tblClientes.getValueAt(fila, 0).toString());
+        txtNombre.setText(tblClientes.getValueAt(fila, 1).toString());
+        txtApellido.setText(tblClientes.getValueAt(fila, 2).toString());
+        txtSexo.setText(tblClientes.getValueAt(fila, 3).toString());
+        }
+    }//GEN-LAST:event_tblClientesMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
