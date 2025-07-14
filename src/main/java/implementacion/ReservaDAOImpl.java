@@ -187,4 +187,42 @@ public class ReservaDAOImpl implements IReservaDAO {
 
         return false;
     }
+
+    @Override
+    public List<Reserva> obtenerTodasReservasFinalizadas() {
+        List<Reserva> lista = new ArrayList<>();
+
+        String sql = "SELECT r.*, c.nombre, c.apellido, h.precio_por_dia "
+                + "FROM Reservas r "
+                + "JOIN Clientes c ON r.dni_cliente = c.dni "
+                + "JOIN Habitaciones h ON r.numero_habitacion = h.numero_habitacion "
+                + "WHERE r.estado = 'Finalizada'";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String dni = rs.getString("dni_cliente");
+                String numero = rs.getString("numero_habitacion");
+                Date entrada = rs.getDate("fecha_entrada");
+                Date salida = rs.getDate("fecha_salida");
+                double precio = rs.getDouble("precio_por_dia");
+                String estado = rs.getString("estado");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+
+                Cliente cliente = new Cliente(dni, nombre, apellido, "");
+                Habitacion habitacion = new Habitacion(numero, true, precio);
+                Reserva reserva = new Reserva(id, cliente, habitacion, entrada, salida, estado);
+
+                lista.add(reserva);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }

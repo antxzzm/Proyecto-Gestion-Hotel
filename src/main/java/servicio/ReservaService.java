@@ -44,4 +44,8 @@ public class ReservaService {
     public boolean actualizar(Reserva reserva) {
         return reservaDAO.actualizarReserva(reserva);
     }
+    
+    public List<Reserva> obtenerTodasReservasFinalizadas(){
+        return reservaDAO.obtenerTodasReservasFinalizadas();
+    }
 }

@@ -83,4 +83,18 @@ public class HabitacionDAOImpl implements IHabitacionDAO {
 
         return null;
     }
+
+    @Override
+    public boolean actualizarPrecio(String numeroHabitacion, double nuevoPrecio) {
+        String sql = "UPDATE Habitaciones SET precio_por_dia = ? WHERE numero_habitacion = ?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, nuevoPrecio);
+            ps.setString(2, numeroHabitacion);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

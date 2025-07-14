@@ -28,4 +28,7 @@ public class HabitacionService {
         return habitacionDAO.buscarPorNumero(numero);
     }
     
+    public boolean actualizarPrecio(String numeroHabitacion, double nuevoPrecio){
+        return habitacionDAO.actualizarPrecio(numeroHabitacion, nuevoPrecio);
+    }
 }

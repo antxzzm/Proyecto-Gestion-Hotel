@@ -13,5 +13,6 @@ public interface IReservaDAO {
     List<Reserva> obtenerReservasFinalizadasPorDni(String dni);
     public Reserva buscarPorId(int idReserva);
     public boolean actualizarReserva(Reserva reserva);
+    public List<Reserva> obtenerTodasReservasFinalizadas();
 
 }

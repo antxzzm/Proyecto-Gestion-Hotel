@@ -9,5 +9,6 @@ public interface IHabitacionDAO {
     boolean cambiarEstado(String numero_habitacion, boolean nuevoEstado);
     boolean agregarHabitacion(Habitacion h);
     Habitacion buscarPorNumero(String numero);
+    boolean actualizarPrecio(String numeroHabitacion, double nuevoPrecio);
 
 }
