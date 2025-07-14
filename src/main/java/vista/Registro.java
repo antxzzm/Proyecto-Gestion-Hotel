@@ -216,13 +216,13 @@ public class Registro extends javax.swing.JFrame {
         boolean registrado = encargadoService.registrarNuevoEncargado(nuevo);
 
         if (registrado) {
-            JOptionPane.showMessageDialog(this, "✅ Usuario registrado con éxito.");
+            JOptionPane.showMessageDialog(this, "Usuario registrado con �xito.");
             Login login = new Login();
             login.setVisible(true);
             login.setLocationRelativeTo(null);
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "⚠️ El usuario ya existe o ocurrió un error.");
+            JOptionPane.showMessageDialog(this, "El usuario ya existe o ocurri� un error.");
         }
     }//GEN-LAST:event_btnRegistrarseActionPerformed
 

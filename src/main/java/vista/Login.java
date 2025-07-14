@@ -173,7 +173,7 @@ public class Login extends javax.swing.JFrame {
         boolean loginExitoso = encargadoService.login(encargado);
 
         if (loginExitoso) {
-            JOptionPane.showMessageDialog(this, "✅ Bienvenido, " + usuario);
+            JOptionPane.showMessageDialog(this, "Bienvenido, " + usuario);
             
             Sistema sistema = new Sistema(this);
             sistema.setVisible(true);
@@ -181,7 +181,7 @@ public class Login extends javax.swing.JFrame {
             sistema.setLocationRelativeTo(null);
             this.dispose(); // cierra la ventana de login actual
         } else {
-            JOptionPane.showMessageDialog(this, "❌ Usuario o contraseña incorrectos.");
+            JOptionPane.showMessageDialog(this, "Usuario o contrase�a incorrectos.");
         }
     }//GEN-LAST:event_btnIniciarActionPerformed
 
