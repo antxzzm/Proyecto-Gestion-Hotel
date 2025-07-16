@@ -1,6 +1,6 @@
 package vista;
 
-// LIBRERÃ?AS ESTÃ?NDAR
+// LIBRERï¿½AS ESTï¿½NDAR
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Date;
@@ -27,6 +27,7 @@ import implementacion.ClienteDAOImpl;
 import implementacion.FacturaDAOImpl;
 import implementacion.HabitacionDAOImpl;
 import implementacion.ReservaDAOImpl;
+import java.text.SimpleDateFormat;
 
 // SERVICIOS
 import servicio.ClienteService;
@@ -44,7 +45,6 @@ public class Sistema extends javax.swing.JFrame {
     // ------------------------------------------------------------------------
     // ATRIBUTOS
     // ------------------------------------------------------------------------
-    
     // Cliente
     IClienteDAO clienteDAO = new ClienteDAOImpl();                // DAO de Cliente
     ClienteService clienteService = new ClienteService(clienteDAO);  // Servicio de Cliente
@@ -83,6 +83,7 @@ public class Sistema extends javax.swing.JFrame {
         cargarClientesEnTabla();          // Mostrar clientes registrados
         desactivarComponentesIniciales(); // Desactivar botones/calendarios
         cargarReservasEnTabla();          // Mostrar reservas en tabla
+        cargarClientesConReservasFinalizadas();
         UtilTabla.agregarFiltroTiempoReal(txtClientes, tblClientes, 0, 1);
         UtilTabla.agregarFiltroTiempoReal(txtReservaCliente, tblReservas, 0, 1);
         UtilFechas.setMinSelectable(jdcEntrada, jdcSalida);
@@ -93,20 +94,6 @@ public class Sistema extends javax.swing.JFrame {
     // ------------------------------------------------------------------------
     // EVENTOS DE VENTANA
     // ------------------------------------------------------------------------
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {
-
-        // Desactivar habitaciones (por seguridad adicional)
-        for (Component comp : panelHabitaciones.getComponents()) {
-            if (comp instanceof JToggleButton boton) {
-                boton.setEnabled(false);
-            }
-        }
-
-        jdcEntrada.setEnabled(false);
-        jdcSalida.setEnabled(false);
-        btnReservar.setEnabled(false);
-    }
-
     private void configurarEventosVentana() {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -142,6 +129,7 @@ public class Sistema extends javax.swing.JFrame {
         jdcEntrada.setEnabled(false);
         jdcSalida.setEnabled(false);
         btnReservar.setEnabled(false);
+        btnCancelarRes.setEnabled(false);
     }
 
     // ------------------------------------------------------------------------
@@ -149,7 +137,11 @@ public class Sistema extends javax.swing.JFrame {
     // ------------------------------------------------------------------------
     private void cargarClientesEnTabla() {
         DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
-        for (Cliente c : clienteService.listarClientes()) {
+        modelo.setRowCount(0);
+
+        List<Cliente> lista = clienteService.listarClientes();
+
+        for (Cliente c : lista) {
             modelo.addRow(new Object[]{
                 c.getDni(),
                 c.getNombre(),
@@ -198,7 +190,6 @@ public class Sistema extends javax.swing.JFrame {
         tblReservas.setModel(modelo);
     }
 
-
     // ------------------------------------------------------------------------
     // FATURACION
     // ------------------------------------------------------------------------
@@ -207,8 +198,8 @@ public class Sistema extends javax.swing.JFrame {
         txtNombreFactura.setEnabled(false);
         txtHabitacionFactura.setEnabled(false);
         txtDiasFactura.setEnabled(false);
-        jdcEntradaFactura.setEnabled(false);
-        jdcSalidaFactura.setEnabled(false);
+        txtEntradaFactura.setEnabled(false);
+        txtSalidaFactura.setEnabled(false);
         txtPrecioDiaFactura.setEnabled(false);
         txtTotalFactura.setEnabled(false);
     }
@@ -236,22 +227,34 @@ public class Sistema extends javax.swing.JFrame {
         txtNombreFactura.setEnabled(true);
         txtHabitacionFactura.setEnabled(true);
         txtDiasFactura.setEnabled(true);
-        jdcEntradaFactura.setEnabled(true);
-        jdcSalidaFactura.setEnabled(true);
+        txtEntradaFactura.setEnabled(true);
+        txtSalidaFactura.setEnabled(true);
         txtPrecioDiaFactura.setEnabled(true);
         txtTotalFactura.setEnabled(true);
     }
 
     private void limpiarCamposFactura() {
-        txtFacturaCliente.setText("");
         txtDNIFactura.setText("");
         txtNombreFactura.setText("");
         txtHabitacionFactura.setText("");
         txtDiasFactura.setText("");
-        jdcEntradaFactura.setDate(null);
-        jdcSalidaFactura.setDate(null);
+        txtEntradaFactura.setText("");
+        txtSalidaFactura.setText("");
         txtPrecioDiaFactura.setText("");
         txtTotalFactura.setText("");
+    }
+
+    private void cargarClientesConReservasFinalizadas() {
+        cmbClientesFacturacion.removeAllItems();
+
+        List<Reserva> reservas = reservaService.listar();
+        for (Reserva r : reservas) {
+            if ("Finalizada".equalsIgnoreCase(r.getEstado())) {
+                Cliente c = r.getCliente();
+                String item = c.getDni() + " - " + c.getNombre() + " " + c.getApellido();
+                cmbClientesFacturacion.addItem(item);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -281,6 +284,7 @@ public class Sistema extends javax.swing.JFrame {
         jPanel9 = new javax.swing.JPanel();
         btnEliminar = new javax.swing.JButton();
         btnRegistrar = new javax.swing.JButton();
+        btnEliminar1 = new javax.swing.JButton();
         txtClientes = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -310,6 +314,8 @@ public class Sistema extends javax.swing.JFrame {
         jdcSalida = new com.toedter.calendar.JDateChooser();
         jLabel15 = new javax.swing.JLabel();
         btnVerificarCliente = new javax.swing.JButton();
+        btnCancelarRes = new javax.swing.JButton();
+        btnPrecioHab = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -320,7 +326,6 @@ public class Sistema extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        txtFacturaCliente = new javax.swing.JTextField();
         btnBuscarFactura = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblFacturas = new javax.swing.JTable();
@@ -339,13 +344,19 @@ public class Sistema extends javax.swing.JFrame {
         txtTotalFactura = new javax.swing.JTextField();
         txtDiasFactura = new javax.swing.JTextField();
         txtNombreFactura = new javax.swing.JTextField();
-        jdcEntradaFactura = new com.toedter.calendar.JDateChooser();
-        jdcSalidaFactura = new com.toedter.calendar.JDateChooser();
+        txtEntradaFactura = new javax.swing.JTextField();
+        txtSalidaFactura = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         btnGenerarFactura = new javax.swing.JButton();
+        cmbClientesFacturacion = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Gallery Hoteles");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 255));
@@ -470,7 +481,8 @@ public class Sistema extends javax.swing.JFrame {
         jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         btnEliminar.setBackground(new java.awt.Color(255, 255, 255));
-        btnEliminar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnEliminar.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eliminar.png"))); // NOI18N
         btnEliminar.setText("ELIMINAR");
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -479,11 +491,22 @@ public class Sistema extends javax.swing.JFrame {
         });
 
         btnRegistrar.setBackground(new java.awt.Color(255, 255, 255));
-        btnRegistrar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnRegistrar.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnRegistrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/registrar.png"))); // NOI18N
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRegistrarActionPerformed(evt);
+            }
+        });
+
+        btnEliminar1.setBackground(new java.awt.Color(255, 255, 255));
+        btnEliminar1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnEliminar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Limpiar.png"))); // NOI18N
+        btnEliminar1.setText("LIMPIAR");
+        btnEliminar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminar1ActionPerformed(evt);
             }
         });
 
@@ -492,20 +515,23 @@ public class Sistema extends javax.swing.JFrame {
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66)
-                .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66))
+                .addContainerGap()
+                .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEliminar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnRegistrar, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEliminar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         txtClientes.addActionListener(new java.awt.event.ActionListener() {
@@ -546,7 +572,7 @@ public class Sistema extends javax.swing.JFrame {
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(107, 232, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -565,7 +591,7 @@ public class Sistema extends javax.swing.JFrame {
                     .addComponent(txtSexo, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -663,7 +689,7 @@ public class Sistema extends javax.swing.JFrame {
                     .addComponent(btn108, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn109, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn110, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(163, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
 
         jPanel6.setBackground(new java.awt.Color(255, 0, 0));
@@ -713,6 +739,8 @@ public class Sistema extends javax.swing.JFrame {
         jLabel12.setForeground(new java.awt.Color(255, 0, 0));
         jLabel12.setText("DNI:");
 
+        txtBuscarNombre.setEditable(false);
+
         jLabel13.setForeground(new java.awt.Color(255, 0, 0));
         jLabel13.setText("FECHA DE ENTRADA");
 
@@ -731,16 +759,29 @@ public class Sistema extends javax.swing.JFrame {
             }
         });
 
+        btnCancelarRes.setBackground(new java.awt.Color(255, 255, 255));
+        btnCancelarRes.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnCancelarRes.setText("CANCELAR");
+        btnCancelarRes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarResActionPerformed(evt);
+            }
+        });
+
+        btnPrecioHab.setBackground(new java.awt.Color(255, 255, 255));
+        btnPrecioHab.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnPrecioHab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/SistemaIconoPrecio.png"))); // NOI18N
+        btnPrecioHab.setText("PRECIO HAB.");
+        btnPrecioHab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrecioHabActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(113, 113, 113)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(96, 96, 96))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -753,73 +794,93 @@ public class Sistema extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel11))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(panelHabitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(panelHabitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(113, 113, 113)
+                                .addComponent(jLabel8))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(btnPrecioHab, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(30, 30, 30)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtBuscarDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtBuscarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addComponent(jdcEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jdcSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                        .addComponent(btnVerificarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(50, 50, 50))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                        .addComponent(btnReservar)
-                                        .addGap(62, 62, 62)))))))
-                .addContainerGap(39, Short.MAX_VALUE))
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                            .addComponent(btnCancelarRes)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(btnReservar))
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGap(18, 18, 18)
+                                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(txtBuscarDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(txtBuscarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(86, 86, 86)
+                                .addComponent(btnVerificarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
+                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(44, 44, 44)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(panelHabitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11))
-                        .addContainerGap(20, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtBuscarDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtBuscarDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnPrecioHab))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtBuscarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(btnVerificarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jdcEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jdcSalida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnReservar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(panelHabitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11))
+                                .addContainerGap(20, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(btnVerificarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jdcEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jdcSalida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnReservar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnCancelarRes, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel8)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
 
@@ -828,7 +889,7 @@ public class Sistema extends javax.swing.JFrame {
         jPanel4.setToolTipText("");
 
         jLabel17.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel17.setText("RESERVAS");
+        jLabel17.setText("HISTORIAL DE RESERVAS");
 
         tblReservas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -876,7 +937,7 @@ public class Sistema extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel17)
-                .addGap(327, 327, 327))
+                .addGap(257, 257, 257))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -896,7 +957,7 @@ public class Sistema extends javax.swing.JFrame {
         jTabbedPane1.addTab("Reservas", jPanel4);
 
         jLabel19.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel19.setText("DNI:");
+        jLabel19.setText("CLIENTES:");
 
         jLabel20.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel20.setText("METODO DE FACTURACION");
@@ -969,6 +1030,10 @@ public class Sistema extends javax.swing.JFrame {
 
         txtNombreFactura.setEditable(false);
 
+        txtEntradaFactura.setEditable(false);
+
+        txtSalidaFactura.setEditable(false);
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -997,15 +1062,15 @@ public class Sistema extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jdcEntradaFactura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtEntradaFactura)
+                        .addGap(12, 12, 12)
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtTotalFactura)
+                    .addComponent(txtTotalFactura, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                     .addComponent(txtDiasFactura)
                     .addComponent(txtNombreFactura)
-                    .addComponent(jdcSalidaFactura, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))
+                    .addComponent(txtSalidaFactura))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -1024,12 +1089,11 @@ public class Sistema extends javax.swing.JFrame {
                     .addComponent(txtHabitacionFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtDiasFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jdcEntradaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jdcSalidaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEntradaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSalidaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1049,6 +1113,8 @@ public class Sistema extends javax.swing.JFrame {
             }
         });
 
+        cmbClientesFacturacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
@@ -1061,14 +1127,15 @@ public class Sistema extends javax.swing.JFrame {
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel8Layout.createSequentialGroup()
                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel8Layout.createSequentialGroup()
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
                                         .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(txtFacturaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(cmbClientesFacturacion, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18))
                                     .addGroup(jPanel8Layout.createSequentialGroup()
                                         .addGap(129, 129, 129)
-                                        .addComponent(jLabel20)))
-                                .addGap(23, 23, 23)
+                                        .addComponent(jLabel20)
+                                        .addGap(44, 44, 44)))
                                 .addComponent(btnBuscarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
@@ -1081,24 +1148,25 @@ public class Sistema extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel20)
-                .addGap(5, 5, 5)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFacturaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
+                        .addContainerGap()
+                        .addComponent(jLabel20)
+                        .addGap(5, 5, 5)
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBuscarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbClientesFacturacion))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGap(126, 126, 126)
                         .addComponent(btnGenerarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
 
         jTabbedPane1.addTab("Facturacion", jPanel8);
@@ -1139,54 +1207,54 @@ public class Sistema extends javax.swing.JFrame {
     //PESTAÃ‘A HABITACIONES - BOTON VERIFICAR
     private void btnVerificarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerificarClienteActionPerformed
         String dni = txtBuscarDNI.getText().trim();
-        String nombre = txtBuscarNombre.getText().trim();
 
-        if (dni.isEmpty() || nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese el DNI y el nombre del cliente.");
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el DNI del cliente.");
             return;
         }
 
         // Verificar si existe el cliente en la base de datos
         Cliente cliente = clienteService.buscarPorDNI(dni);
 
-        String nombreCompletoIngresado = nombre.toLowerCase().trim();
-        String nombreCompletoBD = (cliente.getNombre() + " " + cliente.getApellido()).toLowerCase().trim();
+        if (cliente != null) {
 
-        if (cliente != null && nombreCompletoBD.equals(nombreCompletoIngresado)) {
+            String nombreCompleto = cliente.getNombre() + " " + cliente.getApellido();
+            txtBuscarNombre.setText(nombreCompleto);
 
             if (reservaService.tieneReservaActiva(dni)) {
-                JOptionPane.showMessageDialog(this, "âš ï¸? Este cliente ya tiene una reserva activa.");
+                JOptionPane.showMessageDialog(this, " Este cliente ya tiene una reserva activa.");
                 return;
             }
 
-            JOptionPane.showMessageDialog(this, "âœ… Cliente verificado correctamente.");
+            JOptionPane.showMessageDialog(this, " Cliente verificado correctamente.");
 
-            // Habilitar calendarios y botÃ³n de reservar
+            // Habilitar calendarios y botón de reservar
             jdcEntrada.setEnabled(true);
             jdcSalida.setEnabled(true);
             btnReservar.setEnabled(true);
+            btnCancelarRes.setEnabled(true);
+            btnVerificarCliente.setEnabled(false);
+
+            UtilFechas.establecerFechasEntradaYSalida(jdcEntrada, jdcSalida, this);
 
             // Evitar seleccionar fechas pasadas
             Date hoy = new Date();
             jdcEntrada.setMinSelectableDate(hoy);
             jdcSalida.setMinSelectableDate(hoy);
 
-            // Opcional: bloquear los campos para que no se cambien
             txtBuscarDNI.setEnabled(false);
-            txtBuscarNombre.setEnabled(false);
 
             // Habilitar solo las habitaciones disponibles (verdes)
             UtilHabitacion.configurarBotonesDisponibles(panelHabitaciones);
 
         } else {
-            JOptionPane.showMessageDialog(this, "âš ï¸? Cliente no encontrado. Verifique el DNI y nombre.");
+            JOptionPane.showMessageDialog(this, " Cliente no encontrado. Verifique el DNI y nombre.");
         }
     }//GEN-LAST:event_btnVerificarClienteActionPerformed
 
     //PESTAÃ‘A HABITACIONES - BOTON RESERVAR
     private void btnReservarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservarActionPerformed
         String dni = txtBuscarDNI.getText().trim();
-        String nombre = txtBuscarNombre.getText().trim();
         Date entrada = jdcEntrada.getDate();
         Date salida = jdcSalida.getDate();
         Date hoy = new Date();
@@ -1205,17 +1273,12 @@ public class Sistema extends javax.swing.JFrame {
             return;
         }
 
-        if (entrada.before(hoy)) {
-            JOptionPane.showMessageDialog(this, "La fecha de entrada no puede ser en el pasado.");
-            return;
-        }
-
         if (!salida.after(entrada)) {
             JOptionPane.showMessageDialog(this, "La fecha de salida debe ser posterior a la de entrada.");
             return;
         }
 
-        // Buscar habitaciÃ³n seleccionada
+        // Buscar habitación seleccionada
         String numeroSeleccionado = null;
         for (Component comp : panelHabitaciones.getComponents()) {
             if (comp instanceof JToggleButton boton && boton.isSelected()) {
@@ -1226,19 +1289,19 @@ public class Sistema extends javax.swing.JFrame {
 
         // Validar selecciÃ³n de habitaciÃ³n
         if (numeroSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una habitaciÃ³n.");
+            JOptionPane.showMessageDialog(this, "Seleccione una habitación.");
             return;
         }
 
         // Buscar habitaciÃ³n
         Habitacion habitacion = habitacionService.buscarPorNumero(numeroSeleccionado);
         if (habitacion == null) {
-            JOptionPane.showMessageDialog(this, "â?Œ HabitaciÃ³n no encontrada: " + numeroSeleccionado);
+            JOptionPane.showMessageDialog(this, "Habitación no encontrada: " + numeroSeleccionado);
             return;
         }
 
         if (!habitacion.isEstado()) {
-            JOptionPane.showMessageDialog(this, "La habitaciÃ³n ya estÃ¡ ocupada.");
+            JOptionPane.showMessageDialog(this, "La habitación ya está ocupada.");
             return;
         }
 
@@ -1259,18 +1322,19 @@ public class Sistema extends javax.swing.JFrame {
                 }
             }
 
-            JOptionPane.showMessageDialog(this, "âœ… Reserva registrada con Ã©xito.");
+            JOptionPane.showMessageDialog(this, "Reserva registrada con Exito.");
 
             // Restaurar formulario tras reserva
             txtBuscarDNI.setText("");
             txtBuscarNombre.setText("");
             txtBuscarDNI.setEnabled(true);
-            txtBuscarNombre.setEnabled(true);
             jdcEntrada.setDate(null);
             jdcSalida.setDate(null);
             jdcEntrada.setEnabled(false);
             jdcSalida.setEnabled(false);
+            btnVerificarCliente.setEnabled(true);
             btnReservar.setEnabled(false);
+            btnCancelarRes.setEnabled(false);
 
             // Restaurar botones de habitaciÃ³n (los ocupados ya fueron deshabilitados)
             for (Component comp : panelHabitaciones.getComponents()) {
@@ -1282,7 +1346,7 @@ public class Sistema extends javax.swing.JFrame {
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "â?Œ Error al registrar reserva.");
+            JOptionPane.showMessageDialog(this, " Error al registrar reserva.");
         }
         cargarReservasEnTabla();
     }//GEN-LAST:event_btnReservarActionPerformed
@@ -1303,9 +1367,9 @@ public class Sistema extends javax.swing.JFrame {
             return;
         }
 
-        //ï¸? Validar si el cliente ya existe
+        //ï¿½? Validar si el cliente ya existe
         if (clienteService.buscarPorDNI(dni) != null) {
-            JOptionPane.showMessageDialog(this, "âš ï¸? El cliente con ese DNI ya estÃ¡ registrado.");
+            JOptionPane.showMessageDialog(this, "âš ï¿½? El cliente con ese DNI ya estÃ¡ registrado.");
             return;
         }
 
@@ -1328,7 +1392,7 @@ public class Sistema extends javax.swing.JFrame {
             limpiarCampos();
 
         } else {
-            JOptionPane.showMessageDialog(this, "â?Œ El cliente ya existe o hubo un error.");
+            JOptionPane.showMessageDialog(this, "ï¿½?ï¿½ El cliente ya existe o hubo un error.");
         }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -1341,14 +1405,14 @@ public class Sistema extends javax.swing.JFrame {
 
         if (dni.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Debes completar DNI, nombre y apellido para eliminar.");
+                    "Selecciome Cliente para eliminar.");
             return;
         }
 
         // Verificar si el cliente tiene reservas activas
         if (reservaService.tieneReservaActiva(dni)) {
             JOptionPane.showMessageDialog(this,
-                    "â?Œ No se puede eliminar. El cliente tiene una reserva activa.");
+                    "ï¿½?ï¿½ No se puede eliminar. El cliente tiene una reserva activa.");
             return;
         }
 
@@ -1415,7 +1479,7 @@ public class Sistema extends javax.swing.JFrame {
         String estado = modelo.getValueAt(fila, 7).toString();
 
         if (!estado.equalsIgnoreCase("Activa")) {
-            JOptionPane.showMessageDialog(this, "âš ï¸? Solo se pueden cancelar reservas activas.");
+            JOptionPane.showMessageDialog(this, "âš ï¿½? Solo se pueden cancelar reservas activas.");
             return;
         }
 
@@ -1432,7 +1496,7 @@ public class Sistema extends javax.swing.JFrame {
             cargarReservasEnTabla();
             cargarEstadosHabitaciones();
         } else {
-            JOptionPane.showMessageDialog(this, "â?Œ Error al cancelar la reserva.");
+            JOptionPane.showMessageDialog(this, "ï¿½?ï¿½ Error al cancelar la reserva.");
         }
     }//GEN-LAST:event_btnCancelarReservaActionPerformed
 
@@ -1441,40 +1505,36 @@ public class Sistema extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTotalFacturaActionPerformed
 
     private void btnBuscarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarFacturaActionPerformed
-        String dni = txtFacturaCliente.getText().trim();
+        String seleccionado = (String) cmbClientesFacturacion.getSelectedItem();
 
-        if (dni.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "âš ï¸? Ingresa un DNI para buscar.");
+        if (seleccionado == null || !seleccionado.contains(" - ")) {
+            JOptionPane.showMessageDialog(this, "?? Selecciona un cliente válido.");
             return;
         }
 
-        // Buscar reservas finalizadas por DNI
+        String dni = seleccionado.split(" - ")[0];
+
         List<Reserva> reservas = reservaService.obtenerReservasFinalizadasPorDni(dni);
 
         if (reservas.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "â?Œ No hay reservas finalizadas para este DNI.");
+            JOptionPane.showMessageDialog(this, "? No hay reservas finalizadas para este cliente.");
             return;
         }
 
-        // Suponemos que solo hay una reserva finalizada activa para facturar
         Reserva reserva = reservas.get(0);
         Habitacion hab = reserva.getHabitacion();
         Cliente cli = reserva.getCliente();
 
-        // Guardar ID para la factura
         idReservaFactura = reserva.getId();
 
-        // Llenar campos (y desbloquear)
         txtDNIFactura.setText(cli.getDni());
         txtNombreFactura.setText(cli.getNombre());
         txtHabitacionFactura.setText(hab.getNumero_habitacion());
 
-        jdcEntradaFactura.setDate(reserva.getFechaEntrada());
-        jdcSalidaFactura.setDate(reserva.getFechaSalida());
-        jdcEntradaFactura.setEnabled(false);
-        jdcSalidaFactura.setEnabled(false);
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        txtEntradaFactura.setText(formato.format(reserva.getFechaEntrada()));
+        txtSalidaFactura.setText(formato.format(reserva.getFechaSalida()));
 
-        // Calcular dÃ­as
         long dias = UtilFechas.calcularDias(reserva.getFechaEntrada(), reserva.getFechaSalida());
         txtDiasFactura.setText(String.valueOf(dias));
 
@@ -1482,13 +1542,13 @@ public class Sistema extends javax.swing.JFrame {
         double total = dias * hab.getPrecioPorDia();
         txtTotalFactura.setText(String.format("%.2f", total));
 
-        // Habilitar campos visuales si estaban bloqueados
         desbloquearCamposFactura();
+        cargarClientesConReservasFinalizadas();
     }//GEN-LAST:event_btnBuscarFacturaActionPerformed
 
     private void btnGenerarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarFacturaActionPerformed
         if (idReservaFactura == -1) {
-            JOptionPane.showMessageDialog(this, "âš ï¸? Primero debes buscar una reserva finalizada.");
+            JOptionPane.showMessageDialog(this, " Primero debes buscar una reserva finalizada.");
             return;
         }
 
@@ -1496,7 +1556,7 @@ public class Sistema extends javax.swing.JFrame {
             // Verificar si la reserva ya fue facturada
             Reserva reservaExistente = reservaService.buscarPorId(idReservaFactura);
             if (reservaExistente != null && "Facturada".equalsIgnoreCase(reservaExistente.getEstado())) {
-                JOptionPane.showMessageDialog(this, "âš ï¸? Esta reserva ya ha sido facturada.");
+                JOptionPane.showMessageDialog(this, " Esta reserva ya ha sido facturada.");
                 return;
             }
 
@@ -1504,8 +1564,9 @@ public class Sistema extends javax.swing.JFrame {
             Cliente cliente = new Cliente(txtDNIFactura.getText(), txtNombreFactura.getText(), "", "");
             Habitacion habitacion = new Habitacion(txtHabitacionFactura.getText(), true, Double.parseDouble(txtPrecioDiaFactura.getText()));
 
-            Date entrada = jdcEntradaFactura.getDate();
-            Date salida = jdcSalidaFactura.getDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date entrada = sdf.parse(txtEntradaFactura.getText());
+            Date salida = sdf.parse(txtSalidaFactura.getText());
             int dias = Integer.parseInt(txtDiasFactura.getText());
             double total = Double.parseDouble(txtTotalFactura.getText());
 
@@ -1519,19 +1580,20 @@ public class Sistema extends javax.swing.JFrame {
                 // Actualizar estado de reserva en la base de datos
                 reservaService.actualizar(reserva);
 
-                JOptionPane.showMessageDialog(this, "âœ… Factura generada y guardada correctamente.");
+                JOptionPane.showMessageDialog(this, " Factura generada y guardada correctamente.");
                 cargarFacturasEnTabla();
-                cargarReservasEnTabla(); // << AsegÃºrate de que esta recargue la lista desde reservaService.listar()
+                cargarReservasEnTabla();
                 limpiarCamposFactura();
                 desactivarCamposFactura();
+                cargarClientesConReservasFinalizadas();
                 idReservaFactura = -1;
             } else {
-                JOptionPane.showMessageDialog(this, "â?Œ Error al guardar la factura.");
+                JOptionPane.showMessageDialog(this, "Error al guardar la factura.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "â?Œ OcurriÃ³ un error al generar la factura.");
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al generar la factura.");
         }
     }//GEN-LAST:event_btnGenerarFacturaActionPerformed
 
@@ -1542,12 +1604,64 @@ public class Sistema extends javax.swing.JFrame {
     private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
         int fila = tblClientes.getSelectedRow();
         if (fila >= 0) {
-        txtDni.setText(tblClientes.getValueAt(fila, 0).toString());
-        txtNombre.setText(tblClientes.getValueAt(fila, 1).toString());
-        txtApellido.setText(tblClientes.getValueAt(fila, 2).toString());
-        txtSexo.setText(tblClientes.getValueAt(fila, 3).toString());
+            txtDni.setText(tblClientes.getValueAt(fila, 0).toString());
+            txtNombre.setText(tblClientes.getValueAt(fila, 1).toString());
+            txtApellido.setText(tblClientes.getValueAt(fila, 2).toString());
+            txtSexo.setText(tblClientes.getValueAt(fila, 3).toString());
         }
     }//GEN-LAST:event_tblClientesMouseClicked
+
+    private void btnCancelarResActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarResActionPerformed
+        txtBuscarDNI.setText("");
+        txtBuscarNombre.setText("");
+        txtBuscarDNI.setEnabled(true);
+        jdcEntrada.setDate(null);
+        jdcSalida.setDate(null);
+        jdcEntrada.setEnabled(false);
+        jdcSalida.setEnabled(false);
+        btnReservar.setEnabled(false);
+        btnCancelarRes.setEnabled(false);
+        btnVerificarCliente.setEnabled(true);
+
+        for (Component comp : panelHabitaciones.getComponents()) {
+            if (comp instanceof JToggleButton boton) {
+                boton.setSelected(false);
+                if (boton.getBackground().equals(Color.GREEN)) {
+                    boton.setEnabled(false);
+                }
+            }
+        }
+
+        JOptionPane.showMessageDialog(this, "Operación cancelada. Formulario restaurado.");
+    }//GEN-LAST:event_btnCancelarResActionPerformed
+
+    private void btnEliminar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminar1ActionPerformed
+        limpiarCampos();
+    }//GEN-LAST:event_btnEliminar1ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // Desactivar habitaciones (por seguridad adicional)
+        for (Component comp : panelHabitaciones.getComponents()) {
+            if (comp instanceof JToggleButton boton) {
+                boton.setEnabled(false);
+            }
+        }
+
+        jdcEntrada.setEnabled(false);
+        jdcSalida.setEnabled(false);
+        btnReservar.setEnabled(false);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnPrecioHabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrecioHabActionPerformed
+        PrecioHabitaciones ventanaPrecio = new PrecioHabitaciones();
+        ventanaPrecio.setVisible(true);
+        ventanaPrecio.setLocationRelativeTo(null);
+        if (ventanaPrecio == null || !ventanaPrecio.isVisible()) {
+            ventanaPrecio = new PrecioHabitaciones();
+            ventanaPrecio.setLocationRelativeTo(this);
+            ventanaPrecio.setVisible(true);
+        }
+    }//GEN-LAST:event_btnPrecioHabActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1562,16 +1676,20 @@ public class Sistema extends javax.swing.JFrame {
     private javax.swing.JToggleButton btn109;
     private javax.swing.JToggleButton btn110;
     private javax.swing.JButton btnBuscarFactura;
+    private javax.swing.JButton btnCancelarRes;
     private javax.swing.JButton btnCancelarReserva;
     private javax.swing.JButton btnClientes;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnEliminar1;
     private javax.swing.JButton btnFacturacion;
     private javax.swing.JButton btnGenerarFactura;
     private javax.swing.JButton btnHabitaciones;
+    private javax.swing.JButton btnPrecioHab;
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JButton btnReservar;
     private javax.swing.JButton btnReservas;
     private javax.swing.JButton btnVerificarCliente;
+    private javax.swing.JComboBox<String> cmbClientesFacturacion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1614,9 +1732,7 @@ public class Sistema extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private com.toedter.calendar.JDateChooser jdcEntrada;
-    private com.toedter.calendar.JDateChooser jdcEntradaFactura;
     private com.toedter.calendar.JDateChooser jdcSalida;
-    private com.toedter.calendar.JDateChooser jdcSalidaFactura;
     private javax.swing.JPanel panelHabitaciones;
     private javax.swing.JTable tblClientes;
     private javax.swing.JTable tblFacturas;
@@ -1628,12 +1744,13 @@ public class Sistema extends javax.swing.JFrame {
     private javax.swing.JTextField txtDNIFactura;
     private javax.swing.JTextField txtDiasFactura;
     private javax.swing.JTextField txtDni;
-    private javax.swing.JTextField txtFacturaCliente;
+    private javax.swing.JTextField txtEntradaFactura;
     private javax.swing.JTextField txtHabitacionFactura;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtNombreFactura;
     private javax.swing.JTextField txtPrecioDiaFactura;
     private javax.swing.JTextField txtReservaCliente;
+    private javax.swing.JTextField txtSalidaFactura;
     private javax.swing.JTextField txtSexo;
     private javax.swing.JTextField txtTotalFactura;
     // End of variables declaration//GEN-END:variables
